@@ -307,7 +307,14 @@ NAN_METHOD(gpio_event_clear)
  */
 NAN_METHOD(i2c_begin)
 {
-	bcm2835_i2c_begin();
+	switch (soctype) {
+	case RPIO_SOC_BCM2835:
+		bcm2835_i2c_begin();
+		break;
+	case RPIO_SOC_SUNXI:
+		sunxi_i2c_begin(1);
+		break;
+	}
 }
 
 NAN_METHOD(i2c_set_clock_divider)
@@ -315,8 +322,14 @@ NAN_METHOD(i2c_set_clock_divider)
 	ASSERT_ARGC1(IS_U32);
 
 	uint32_t divider = FROM_U32(0);
-
-	bcm2835_i2c_setClockDivider(divider);
+	
+	switch (soctype) {
+	case RPIO_SOC_BCM2835:
+		bcm2835_i2c_setClockDivider(divider);
+		break;
+	case RPIO_SOC_SUNXI:
+		return ThrowTypeError("SUNXI doesn't support i2c clock divider");
+	}
 }
 
 NAN_METHOD(i2c_set_baudrate)
@@ -326,6 +339,14 @@ NAN_METHOD(i2c_set_baudrate)
 	uint32_t baudrate = FROM_U32(0);
 
 	bcm2835_i2c_set_baudrate(baudrate);
+
+	switch (soctype) {
+	case RPIO_SOC_BCM2835:
+		bcm2835_i2c_set_baudrate(baudrate);
+		break;
+	case RPIO_SOC_SUNXI:
+		return ThrowTypeError("SUNXI doesn't support i2c baudrate");
+	}
 }
 
 NAN_METHOD(i2c_set_slave_address)
@@ -334,12 +355,26 @@ NAN_METHOD(i2c_set_slave_address)
 
 	uint32_t addr = FROM_U32(0);
 
-	bcm2835_i2c_setSlaveAddress(addr);
+	switch (soctype) {
+	case RPIO_SOC_BCM2835:
+		bcm2835_i2c_setSlaveAddress(addr);
+		break;
+	case RPIO_SOC_SUNXI:
+		sunxi_i2c_setSlaveAddress(addr);
+		break;
+	}
 }
 
 NAN_METHOD(i2c_end)
 {
-	bcm2835_i2c_end();
+	switch (soctype) {
+	case RPIO_SOC_BCM2835:
+		bcm2835_i2c_end();
+		break;
+	case RPIO_SOC_SUNXI:
+		 // no implementation for sunxi
+		break;
+	}
 }
 
 
@@ -356,7 +391,14 @@ NAN_METHOD(i2c_read)
 	char *buf = FROM_OBJ(0);
 	uint32_t len = FROM_U32(1);
 
-	NAN_RETURN(bcm2835_i2c_read(buf, len));
+	switch (soctype) {
+	case RPIO_SOC_BCM2835:
+		NAN_RETURN(bcm2835_i2c_read(buf, len));
+		break;
+	case RPIO_SOC_SUNXI:
+		 NAN_RETURN(sunxi_i2c_read(buf, len));
+		break;
+	}
 }
 
 NAN_METHOD(i2c_read_register_rs)
@@ -367,7 +409,13 @@ NAN_METHOD(i2c_read_register_rs)
 	char *buf = FROM_OBJ(1);
 	uint32_t len = FROM_U32(2);
 
-	NAN_RETURN(bcm2835_i2c_read_register_rs(reg, buf, len));
+	switch (soctype) {
+	case RPIO_SOC_BCM2835:
+		NAN_RETURN(bcm2835_i2c_read_register_rs(reg, buf, len));
+		break;
+	case RPIO_SOC_SUNXI:
+		 return ThrowTypeError("SUNXI doesn't support i2c read_register_rs");
+	}
 }
 
 NAN_METHOD(i2c_write_read_rs)
@@ -379,7 +427,13 @@ NAN_METHOD(i2c_write_read_rs)
 	char *buf = FROM_OBJ(2);
 	uint32_t buflen = FROM_U32(3);
 
-	NAN_RETURN(bcm2835_i2c_write_read_rs(cmds, cmdlen, buf, buflen));
+	switch (soctype) {
+	case RPIO_SOC_BCM2835:
+		NAN_RETURN(bcm2835_i2c_write_read_rs(cmds, cmdlen, buf, buflen));
+		break;
+	case RPIO_SOC_SUNXI:
+		 return ThrowTypeError("SUNXI doesn't support i2c write_read_rs");
+	}
 }
 
 NAN_METHOD(i2c_write)
@@ -389,7 +443,14 @@ NAN_METHOD(i2c_write)
 	char *buf = FROM_OBJ(0);
 	uint32_t len = FROM_U32(1);
 
-	NAN_RETURN(bcm2835_i2c_write(buf, len));
+	switch (soctype) {
+	case RPIO_SOC_BCM2835:
+		NAN_RETURN(bcm2835_i2c_write(buf, len));
+		break;
+	case RPIO_SOC_SUNXI:
+		NAN_RETURN(sunxi_i2c_write(buf, len));
+		break;
+	}
 }
 
 /*
