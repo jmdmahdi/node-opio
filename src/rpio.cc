@@ -240,8 +240,7 @@ NAN_METHOD(gpio_pud)
 		bcm2835_gpio_set_pud(pin, pud);
 		break;
 	case RPIO_SOC_SUNXI:
-		sunxi_gpio_set_pud(pin, pud);
-		break;
+		return ThrowTypeError("SUNXI doesn't support gpio_pud");
 	}
 }
 
